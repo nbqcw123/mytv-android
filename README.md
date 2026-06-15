@@ -2,12 +2,13 @@
     <h1>我的电视</h1>
 <div align="center">
 
-![GitHub repo size](https://img.shields.io/github/repo-size/yaoxieyoulei/mytv-android)
-![GitHub Repo stars](https://img.shields.io/github/stars/yaoxieyoulei/mytv-android)
-![GitHub all releases](https://img.shields.io/github/downloads/yaoxieyoulei/mytv-android/total)
+![GitHub repo size](https://img.shields.io/github/repo-size/nbqcw123/mytv-android)
+![GitHub Repo stars](https://img.shields.io/github/stars/nbqcw123/mytv-android)
+![GitHub all releases](https://img.shields.io/github/downloads/nbqcw123/mytv-android/total)
 
 </div>
     <p>使用Android原生开发的电视直播软件</p>
+    <p><b>v1.4.4</b></p>
 
 <img src="./screenshots/Screenshot_panel.png" width="96%"/>
 <br/>

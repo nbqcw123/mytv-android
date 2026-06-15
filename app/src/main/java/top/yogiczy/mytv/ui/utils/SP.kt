@@ -19,322 +19,136 @@ object SP {
         sp = getInstance(context)
     }
 
-    enum class KEY {
-        /** ==================== 应用 ==================== */
-        /** 开机自启 */
-        APP_BOOT_LAUNCH,
-
-        /** 上一次最新版本 */
-        APP_LAST_LATEST_VERSION,
-
-        /** 设备显示类型 */
-        APP_DEVICE_DISPLAY_TYPE,
-
-        /** ==================== 调式 ==================== */
-        /** 显示fps */
-        DEBUG_SHOW_FPS,
-
-        /** 播放器详细信息 */
-        DEBUG_SHOW_VIDEO_PLAYER_METADATA,
-
-        /** ==================== 直播源 ==================== */
-        /** 上一次直播源序号 */
-        IPTV_LAST_IPTV_IDX,
-
-        /** 换台反转 */
-        IPTV_CHANNEL_CHANGE_FLIP,
-
-        /** 直播源精简 */
-        IPTV_SOURCE_SIMPLIFY,
-
-        /** 直播源url */
-        IPTV_SOURCE_URL,
-
-        /** 直播源缓存时间（毫秒） */
-        IPTV_SOURCE_CACHE_TIME,
-
-        /** 直播源可播放host列表 */
-        IPTV_PLAYABLE_HOST_LIST,
-
-        /** 直播源历史列表 */
-        IPTV_SOURCE_URL_HISTORY_LIST,
-
-        /** 是否启用数字选台 */
-        IPTV_CHANNEL_NO_SELECT_ENABLE,
-
-        /** 是否启用直播源频道收藏 */
-        IPTV_CHANNEL_FAVORITE_ENABLE,
-
-        /** 显示直播源频道收藏列表 */
-        IPTV_CHANNEL_FAVORITE_LIST_VISIBLE,
-
-        /** 直播源频道收藏列表 */
-        IPTV_CHANNEL_FAVORITE_LIST,
-
-        /** ==================== 节目单 ==================== */
-        /** 启用节目单 */
-        EPG_ENABLE,
-
-        /** 节目单 xml url */
-        EPG_XML_URL,
-
-        /** 节目单刷新时间阈值（小时） */
-        EPG_REFRESH_TIME_THRESHOLD,
-
-        /** 节目单历史列表 */
-        EPG_XML_URL_HISTORY_LIST,
-
-        /** ==================== 界面 ==================== */
-        /** 显示节目进度 */
-        UI_SHOW_EPG_PROGRAMME_PROGRESS,
-
-        /** 使用经典选台界面 */
-        UI_USE_CLASSIC_PANEL_SCREEN,
-
-        /** 界面密度缩放比例 */
-        UI_DENSITY_SCALE_RATIO,
-
-        /** 界面字体缩放比例 */
-        UI_FONT_SCALE_RATIO,
-
-        /** 时间显示模式 */
-        UI_TIME_SHOW_MODE,
-
-        /** 画中画模式 */
-        UI_PIP_MODE,
-
-        /** ==================== 更新 ==================== */
-        /** 更新强提醒（弹窗形式） */
-        UPDATE_FORCE_REMIND,
-
-        /** ==================== 播放器 ==================== */
-        /** 播放器 自定义ua */
-        VIDEO_PLAYER_USER_AGENT,
-
-        /** 播放器 加载超时 */
-        VIDEO_PLAYER_LOAD_TIMEOUT,
-
-        /** 播放器 画面比例 */
-        VIDEO_PLAYER_ASPECT_RATIO,
+    // ---- Property Delegates ----
+    private fun boolPref(key: String, default: Boolean) = object {
+        operator fun getValue(thisRef: Any?, property: kotlin.reflect.KProperty<*>): Boolean =
+            sp.getBoolean(key, default)
+        operator fun setValue(thisRef: Any?, property: kotlin.reflect.KProperty<*>, value: Boolean) =
+            sp.edit().putBoolean(key, value).apply()
     }
 
-    /** ==================== 应用 ==================== */
-    /** 开机自启 */
-    var appBootLaunch: Boolean
-        get() = sp.getBoolean(KEY.APP_BOOT_LAUNCH.name, false)
-        set(value) = sp.edit().putBoolean(KEY.APP_BOOT_LAUNCH.name, value).apply()
-
-    /** 上一次最新版本 */
-    var appLastLatestVersion: String
-        get() = sp.getString(KEY.APP_LAST_LATEST_VERSION.name, "")!!
-        set(value) = sp.edit().putString(KEY.APP_LAST_LATEST_VERSION.name, value).apply()
-
-    /** 设备显示类型 */
-    var appDeviceDisplayType: AppDeviceDisplayType
-        get() = AppDeviceDisplayType.fromValue(sp.getInt(KEY.APP_DEVICE_DISPLAY_TYPE.name, 0))
-        set(value) = sp.edit().putInt(KEY.APP_DEVICE_DISPLAY_TYPE.name, value.value).apply()
-
-    /** ==================== 调式 ==================== */
-    /** 显示fps */
-    var debugShowFps: Boolean
-        get() = sp.getBoolean(KEY.DEBUG_SHOW_FPS.name, false)
-        set(value) = sp.edit().putBoolean(KEY.DEBUG_SHOW_FPS.name, value).apply()
-
-    /** 播放器详细信息 */
-    var debugShowVideoPlayerMetadata: Boolean
-        get() = sp.getBoolean(KEY.DEBUG_SHOW_VIDEO_PLAYER_METADATA.name, false)
-        set(value) = sp.edit().putBoolean(KEY.DEBUG_SHOW_VIDEO_PLAYER_METADATA.name, value).apply()
-
-    /** ==================== 直播源 ==================== */
-    /** 上一次直播源序号 */
-    var iptvLastIptvIdx: Int
-        get() = sp.getInt(KEY.IPTV_LAST_IPTV_IDX.name, 0)
-        set(value) = sp.edit().putInt(KEY.IPTV_LAST_IPTV_IDX.name, value).apply()
-
-    /** 换台反转 */
-    var iptvChannelChangeFlip: Boolean
-        get() = sp.getBoolean(KEY.IPTV_CHANNEL_CHANGE_FLIP.name, false)
-        set(value) = sp.edit().putBoolean(KEY.IPTV_CHANNEL_CHANGE_FLIP.name, value).apply()
-
-    /** 直播源精简 */
-    var iptvSourceSimplify: Boolean
-        get() = sp.getBoolean(KEY.IPTV_SOURCE_SIMPLIFY.name, false)
-        set(value) = sp.edit().putBoolean(KEY.IPTV_SOURCE_SIMPLIFY.name, value).apply()
-
-    /** 直播源 url */
-    var iptvSourceUrl: String
-        get() = (sp.getString(KEY.IPTV_SOURCE_URL.name, "")
-            ?: "").ifBlank { Constants.IPTV_SOURCE_URL }
-        set(value) = sp.edit().putString(KEY.IPTV_SOURCE_URL.name, value).apply()
-
-    /** 直播源缓存时间（毫秒） */
-    var iptvSourceCacheTime: Long
-        get() = sp.getLong(KEY.IPTV_SOURCE_CACHE_TIME.name, Constants.IPTV_SOURCE_CACHE_TIME)
-        set(value) = sp.edit().putLong(KEY.IPTV_SOURCE_CACHE_TIME.name, value).apply()
-
-    /** 直播源可播放host列表 */
-    var iptvPlayableHostList: Set<String>
-        get() = sp.getStringSet(KEY.IPTV_PLAYABLE_HOST_LIST.name, emptySet()) ?: emptySet()
-        set(value) = sp.edit().putStringSet(KEY.IPTV_PLAYABLE_HOST_LIST.name, value).apply()
-
-    /** 直播源历史列表 */
-    var iptvSourceUrlHistoryList: Set<String>
-        get() = sp.getStringSet(KEY.IPTV_SOURCE_URL_HISTORY_LIST.name, emptySet()) ?: emptySet()
-        set(value) = sp.edit().putStringSet(KEY.IPTV_SOURCE_URL_HISTORY_LIST.name, value).apply()
-
-    /** 是否启用数字选台 */
-    var iptvChannelNoSelectEnable: Boolean
-        get() = sp.getBoolean(KEY.IPTV_CHANNEL_NO_SELECT_ENABLE.name, true)
-        set(value) = sp.edit().putBoolean(KEY.IPTV_CHANNEL_NO_SELECT_ENABLE.name, value).apply()
-
-    /** 是否启用直播源频道收藏 */
-    var iptvChannelFavoriteEnable: Boolean
-        get() = sp.getBoolean(KEY.IPTV_CHANNEL_FAVORITE_ENABLE.name, true)
-        set(value) = sp.edit().putBoolean(KEY.IPTV_CHANNEL_FAVORITE_ENABLE.name, value).apply()
-
-    /** 显示直播源频道收藏列表 */
-    var iptvChannelFavoriteListVisible: Boolean
-        get() = sp.getBoolean(KEY.IPTV_CHANNEL_FAVORITE_LIST_VISIBLE.name, false)
-        set(value) = sp.edit().putBoolean(KEY.IPTV_CHANNEL_FAVORITE_LIST_VISIBLE.name, value)
-            .apply()
-
-    /** 直播源频道收藏列表 */
-    var iptvChannelFavoriteList: Set<String>
-        get() = sp.getStringSet(KEY.IPTV_CHANNEL_FAVORITE_LIST.name, emptySet()) ?: emptySet()
-        set(value) = sp.edit().putStringSet(KEY.IPTV_CHANNEL_FAVORITE_LIST.name, value).apply()
-
-    /** ==================== 节目单 ==================== */
-    /** 启用节目单 */
-    var epgEnable: Boolean
-        get() = sp.getBoolean(KEY.EPG_ENABLE.name, true)
-        set(value) = sp.edit().putBoolean(KEY.EPG_ENABLE.name, value).apply()
-
-    /** 节目单 xml url */
-    var epgXmlUrl: String
-        get() = (sp.getString(KEY.EPG_XML_URL.name, "") ?: "").ifBlank { Constants.EPG_XML_URL }
-        set(value) = sp.edit().putString(KEY.EPG_XML_URL.name, value).apply()
-
-    /** 节目单刷新时间阈值（小时） */
-    var epgRefreshTimeThreshold: Int
-        get() = sp.getInt(KEY.EPG_REFRESH_TIME_THRESHOLD.name, Constants.EPG_REFRESH_TIME_THRESHOLD)
-        set(value) = sp.edit().putInt(KEY.EPG_REFRESH_TIME_THRESHOLD.name, value).apply()
-
-    /** 节目单历史列表 */
-    var epgXmlUrlHistoryList: Set<String>
-        get() = sp.getStringSet(KEY.EPG_XML_URL_HISTORY_LIST.name, emptySet()) ?: emptySet()
-        set(value) = sp.edit().putStringSet(KEY.EPG_XML_URL_HISTORY_LIST.name, value).apply()
-
-    /** ==================== 界面 ==================== */
-    /** 显示节目进度 */
-    var uiShowEpgProgrammeProgress: Boolean
-        get() = sp.getBoolean(KEY.UI_SHOW_EPG_PROGRAMME_PROGRESS.name, true)
-        set(value) = sp.edit().putBoolean(KEY.UI_SHOW_EPG_PROGRAMME_PROGRESS.name, value).apply()
-
-    /** 使用经典选台界面 */
-    var uiUseClassicPanelScreen: Boolean
-        get() = sp.getBoolean(KEY.UI_USE_CLASSIC_PANEL_SCREEN.name, false)
-        set(value) = sp.edit().putBoolean(KEY.UI_USE_CLASSIC_PANEL_SCREEN.name, value).apply()
-
-    /** 界面密度缩放比例 */
-    var uiDensityScaleRatio: Float
-        get() = sp.getFloat(KEY.UI_DENSITY_SCALE_RATIO.name, 1f)
-        set(value) = sp.edit().putFloat(KEY.UI_DENSITY_SCALE_RATIO.name, value).apply()
-
-    /** 界面字体缩放比例 */
-    var uiFontScaleRatio: Float
-        get() = sp.getFloat(KEY.UI_FONT_SCALE_RATIO.name, 1f)
-        set(value) = sp.edit().putFloat(KEY.UI_FONT_SCALE_RATIO.name, value).apply()
-
-    /** 时间显示模式 */
-    var uiTimeShowMode: UiTimeShowMode
-        get() = UiTimeShowMode.fromValue(sp.getInt(KEY.UI_TIME_SHOW_MODE.name, 0))
-        set(value) = sp.edit().putInt(KEY.UI_TIME_SHOW_MODE.name, value.value).apply()
-
-    /** 画中画模式 */
-    var uiPipMode: Boolean
-        get() = sp.getBoolean(KEY.UI_PIP_MODE.name, false)
-        set(value) = sp.edit().putBoolean(KEY.UI_PIP_MODE.name, value).apply()
-
-    /** ==================== 更新 ==================== */
-    /** 更新强提醒（弹窗形式） */
-    var updateForceRemind: Boolean
-        get() = sp.getBoolean(KEY.UPDATE_FORCE_REMIND.name, false)
-        set(value) = sp.edit().putBoolean(KEY.UPDATE_FORCE_REMIND.name, value).apply()
-
-    /** ==================== 播放器 ==================== */
-    /** 播放器 自定义ua */
-    var videoPlayerUserAgent: String
-        get() = (sp.getString(KEY.VIDEO_PLAYER_USER_AGENT.name, "") ?: "").ifBlank {
-            Constants.VIDEO_PLAYER_USER_AGENT
-        }
-        set(value) = sp.edit().putString(KEY.VIDEO_PLAYER_USER_AGENT.name, value).apply()
-
-    /** 播放器 加载超时 */
-    var videoPlayerLoadTimeout: Long
-        get() = sp.getLong(KEY.VIDEO_PLAYER_LOAD_TIMEOUT.name, Constants.VIDEO_PLAYER_LOAD_TIMEOUT)
-        set(value) = sp.edit().putLong(KEY.VIDEO_PLAYER_LOAD_TIMEOUT.name, value).apply()
-
-    /** 播放器 画面比例 */
-    var videoPlayerAspectRatio: VideoPlayerAspectRatio
-        get() = VideoPlayerAspectRatio.fromValue(
-            sp.getInt(KEY.VIDEO_PLAYER_ASPECT_RATIO.name, VideoPlayerAspectRatio.ORIGINAL.value)
-        )
-        set(value) = sp.edit().putInt(KEY.VIDEO_PLAYER_ASPECT_RATIO.name, value.value).apply()
-
-    enum class UiTimeShowMode(val value: Int) {
-        /** 隐藏 */
-        HIDDEN(0),
-
-        /** 常显 */
-        ALWAYS(1),
-
-        /** 整点 */
-        EVERY_HOUR(2),
-
-        /** 半点 */
-        HALF_HOUR(3);
-
-        companion object {
-            fun fromValue(value: Int): UiTimeShowMode {
-                return entries.firstOrNull { it.value == value } ?: ALWAYS
-            }
-        }
+    private fun intPref(key: String, default: Int) = object {
+        operator fun getValue(thisRef: Any?, property: kotlin.reflect.KProperty<*>): Int =
+            sp.getInt(key, default)
+        operator fun setValue(thisRef: Any?, property: kotlin.reflect.KProperty<*>, value: Int) =
+            sp.edit().putInt(key, value).apply()
     }
 
-    enum class AppDeviceDisplayType(val value: Int) {
-        /** tv端 */
-        LEANBACK(0),
-
-        /** 手机端 */
-        MOBILE(1),
-
-        /** 平板端 */
-        PAD(2);
-
-        companion object {
-            fun fromValue(value: Int): AppDeviceDisplayType {
-                return entries.firstOrNull { it.value == value } ?: LEANBACK
-            }
-        }
+    private fun longPref(key: String, default: Long) = object {
+        operator fun getValue(thisRef: Any?, property: kotlin.reflect.KProperty<*>): Long =
+            sp.getLong(key, default)
+        operator fun setValue(thisRef: Any?, property: kotlin.reflect.KProperty<*>, value: Long) =
+            sp.edit().putLong(key, value).apply()
     }
 
-    enum class VideoPlayerAspectRatio(val value: Int) {
-        /** 原始 */
-        ORIGINAL(0),
+    private fun floatPref(key: String, default: Float) = object {
+        operator fun getValue(thisRef: Any?, property: kotlin.reflect.KProperty<*>): Float =
+            sp.getFloat(key, default)
+        operator fun setValue(thisRef: Any?, property: kotlin.reflect.KProperty<*>, value: Float) =
+            sp.edit().putFloat(key, value).apply()
+    }
 
-        /** 16:9 */
-        SIXTEEN_NINE(1),
+    private fun stringPref(key: String, default: String) = object {
+        operator fun getValue(thisRef: Any?, property: kotlin.reflect.KProperty<*>): String =
+            sp.getString(key, default) ?: default
+        operator fun setValue(thisRef: Any?, property: kotlin.reflect.KProperty<*>, value: String) =
+            sp.edit().putString(key, value).apply()
+    }
 
-        /** 4:3 */
-        FOUR_THREE(2),
+    private fun stringSetPref(key: String, default: Set<String>) = object {
+        operator fun getValue(thisRef: Any?, property: kotlin.reflect.KProperty<*>): Set<String> =
+            sp.getStringSet(key, default) ?: default
+        operator fun setValue(thisRef: Any?, property: kotlin.reflect.KProperty<*>, value: Set<String>) =
+            sp.edit().putStringSet(key, value).apply()
+    }
 
-        /** 自动拉伸 */
-        AUTO(3);
+    // ---- Keys ----
+    private const val K_APP_BOOT_LAUNCH = "APP_BOOT_LAUNCH"
+    private const val K_APP_LAST_LATEST_VERSION = "APP_LAST_LATEST_VERSION"
+    private const val K_APP_DEVICE_DISPLAY_TYPE = "APP_DEVICE_DISPLAY_TYPE"
+    private const val K_DEBUG_SHOW_FPS = "DEBUG_SHOW_FPS"
+    private const val K_DEBUG_SHOW_VIDEO_PLAYER_METADATA = "DEBUG_SHOW_VIDEO_PLAYER_METADATA"
+    private const val K_IPTV_LAST_IPTV_IDX = "IPTV_LAST_IPTV_IDX"
+    private const val K_IPTV_CHANNEL_CHANGE_FLIP = "IPTV_CHANNEL_CHANGE_FLIP"
+    private const val K_IPTV_SOURCE_SIMPLIFY = "IPTV_SOURCE_SIMPLIFY"
+    private const val K_IPTV_SOURCE_URL = "IPTV_SOURCE_URL"
+    private const val K_IPTV_SOURCE_CACHE_TIME = "IPTV_SOURCE_CACHE_TIME"
+    private const val K_IPTV_PLAYABLE_HOST_LIST = "IPTV_PLAYABLE_HOST_LIST"
+    private const val K_IPTV_SOURCE_URL_HISTORY_LIST = "IPTV_SOURCE_URL_HISTORY_LIST"
+    private const val K_IPTV_CHANNEL_NO_SELECT_ENABLE = "IPTV_CHANNEL_NO_SELECT_ENABLE"
+    private const val K_IPTV_CHANNEL_FAVORITE_ENABLE = "IPTV_CHANNEL_FAVORITE_ENABLE"
+    private const val K_IPTV_CHANNEL_FAVORITE_LIST_VISIBLE = "IPTV_CHANNEL_FAVORITE_LIST_VISIBLE"
+    private const val K_IPTV_CHANNEL_FAVORITE_LIST = "IPTV_CHANNEL_FAVORITE_LIST"
+    private const val K_EPG_ENABLE = "EPG_ENABLE"
+    private const val K_EPG_XML_URL = "EPG_XML_URL"
+    private const val K_EPG_REFRESH_TIME_THRESHOLD = "EPG_REFRESH_TIME_THRESHOLD"
+    private const val K_EPG_XML_URL_HISTORY_LIST = "EPG_XML_URL_HISTORY_LIST"
+    private const val K_UI_SHOW_EPG_PROGRAMME_PROGRESS = "UI_SHOW_EPG_PROGRAMME_PROGRESS"
+    private const val K_UI_USE_CLASSIC_PANEL_SCREEN = "UI_USE_CLASSIC_PANEL_SCREEN"
+    private const val K_UI_DENSITY_SCALE_RATIO = "UI_DENSITY_SCALE_RATIO"
+    private const val K_UI_FONT_SCALE_RATIO = "UI_FONT_SCALE_RATIO"
+    private const val K_UI_TIME_SHOW_MODE = "UI_TIME_SHOW_MODE"
+    private const val K_UI_PIP_MODE = "UI_PIP_MODE"
+    private const val K_UPDATE_FORCE_REMIND = "UPDATE_FORCE_REMIND"
+    private const val K_VIDEO_PLAYER_USER_AGENT = "VIDEO_PLAYER_USER_AGENT"
+    private const val K_VIDEO_PLAYER_LOAD_TIMEOUT = "VIDEO_PLAYER_LOAD_TIMEOUT"
+    private const val K_VIDEO_PLAYER_ASPECT_RATIO = "VIDEO_PLAYER_ASPECT_RATIO"
 
-        companion object {
-            fun fromValue(value: Int): VideoPlayerAspectRatio {
-                return entries.firstOrNull { it.value == value } ?: ORIGINAL
-            }
+    // ---- Properties ----
+    var appBootLaunch: Boolean by boolPref(K_APP_BOOT_LAUNCH, false)
+    var appLastLatestVersion: String by stringPref(K_APP_LAST_LATEST_VERSION, "")
+    var appDeviceDisplayType: AppDeviceDisplayType by intEnumPref(K_APP_DEVICE_DISPLAY_TYPE, AppDeviceDisplayType.LEANBACK)
+    var debugShowFps: Boolean by boolPref(K_DEBUG_SHOW_FPS, false)
+    var debugShowVideoPlayerMetadata: Boolean by boolPref(K_DEBUG_SHOW_VIDEO_PLAYER_METADATA, false)
+    var iptvLastIptvIdx: Int by intPref(K_IPTV_LAST_IPTV_IDX, 0)
+    var iptvChannelChangeFlip: Boolean by boolPref(K_IPTV_CHANNEL_CHANGE_FLIP, false)
+    var iptvSourceSimplify: Boolean by boolPref(K_IPTV_SOURCE_SIMPLIFY, false)
+    var iptvSourceUrl: String by stringPref(K_IPTV_SOURCE_URL, Constants.IPTV_SOURCE_URL)
+    var iptvSourceCacheTime: Long by longPref(K_IPTV_SOURCE_CACHE_TIME, Constants.IPTV_SOURCE_CACHE_TIME)
+    var iptvPlayableHostList: Set<String> by stringSetPref(K_IPTV_PLAYABLE_HOST_LIST, emptySet())
+    var iptvSourceUrlHistoryList: Set<String> by stringSetPref(K_IPTV_SOURCE_URL_HISTORY_LIST, emptySet())
+    var iptvChannelNoSelectEnable: Boolean by boolPref(K_IPTV_CHANNEL_NO_SELECT_ENABLE, true)
+    var iptvChannelFavoriteEnable: Boolean by boolPref(K_IPTV_CHANNEL_FAVORITE_ENABLE, true)
+    var iptvChannelFavoriteListVisible: Boolean by boolPref(K_IPTV_CHANNEL_FAVORITE_LIST_VISIBLE, false)
+    var iptvChannelFavoriteList: Set<String> by stringSetPref(K_IPTV_CHANNEL_FAVORITE_LIST, emptySet())
+    var epgEnable: Boolean by boolPref(K_EPG_ENABLE, true)
+    var epgXmlUrl: String by stringPref(K_EPG_XML_URL, Constants.EPG_XML_URL)
+    var epgRefreshTimeThreshold: Int by intPref(K_EPG_REFRESH_TIME_THRESHOLD, Constants.EPG_REFRESH_TIME_THRESHOLD)
+    var epgXmlUrlHistoryList: Set<String> by stringSetPref(K_EPG_XML_URL_HISTORY_LIST, emptySet())
+    var uiShowEpgProgrammeProgress: Boolean by boolPref(K_UI_SHOW_EPG_PROGRAMME_PROGRESS, true)
+    var uiUseClassicPanelScreen: Boolean by boolPref(K_UI_USE_CLASSIC_PANEL_SCREEN, false)
+    var uiDensityScaleRatio: Float by floatPref(K_UI_DENSITY_SCALE_RATIO, 1f)
+    var uiFontScaleRatio: Float by floatPref(K_UI_FONT_SCALE_RATIO, 1f)
+    var uiTimeShowMode: UiTimeShowMode by intEnumPref(K_UI_TIME_SHOW_MODE, UiTimeShowMode.ALWAYS)
+    var uiPipMode: Boolean by boolPref(K_UI_PIP_MODE, false)
+    var updateForceRemind: Boolean by boolPref(K_UPDATE_FORCE_REMIND, false)
+    var videoPlayerUserAgent: String by stringPref(K_VIDEO_PLAYER_USER_AGENT, Constants.VIDEO_PLAYER_USER_AGENT)
+    var videoPlayerLoadTimeout: Long by longPref(K_VIDEO_PLAYER_LOAD_TIMEOUT, Constants.VIDEO_PLAYER_LOAD_TIMEOUT)
+    var videoPlayerAspectRatio: VideoPlayerAspectRatio by intEnumPref(K_VIDEO_PLAYER_ASPECT_RATIO, VideoPlayerAspectRatio.ORIGINAL)
+
+    // ---- Enum helpers ----
+    private inline fun <reified T : Enum<T>> intEnumPref(key: String, default: T) = object {
+        operator fun getValue(thisRef: Any?, property: kotlin.reflect.KProperty<*>): T {
+            val value = sp.getInt(key, default.value)
+            return enumValues<T>().firstOrNull { (it as? EnumWithValue)?.value == value } ?: default
         }
+        operator fun setValue(thisRef: Any?, property: kotlin.reflect.KProperty<*>, value: T) =
+            sp.edit().putInt(key, (value as EnumWithValue).value).apply()
+    }
+
+    interface EnumWithValue {
+        val value: Int
+    }
+
+    enum class UiTimeShowMode(override val value: Int) : EnumWithValue {
+        HIDDEN(0), ALWAYS(1), EVERY_HOUR(2), HALF_HOUR(3);
+    }
+
+    enum class AppDeviceDisplayType(override val value: Int) : EnumWithValue {
+        LEANBACK(0), MOBILE(1), PAD(2);
+    }
+
+    enum class VideoPlayerAspectRatio(override val value: Int) : EnumWithValue {
+        ORIGINAL(0), SIXTEEN_NINE(1), FOUR_THREE(2), AUTO(3);
     }
 }

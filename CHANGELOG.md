@@ -1,5 +1,16 @@
 # 更新日志
 
+## [1.4.5] - 2026-06-15
+
+### 修复
+- 修复播放器 contentType 重复判断 bug（第112-113行）
+
+### 优化
+- OkHttpClient 单例化 + 连接池复用（IptvRepository、EpgXmlRepository）
+- SimpleDateFormat 替换为 DateTimeFormatter（线程安全）
+- SP.kt 用 property delegate 简化（339行 → 153行，减少58%代码）
+- FileCacheRepository 加缓存大小限制（10MB，超出自动清理最旧文件）
+
 ## [1.4.4] - 2024-08-15
 
 ### 优化

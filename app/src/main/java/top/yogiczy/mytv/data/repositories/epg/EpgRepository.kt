@@ -16,9 +16,7 @@ import top.yogiczy.mytv.data.repositories.FileCacheRepository
 import top.yogiczy.mytv.data.repositories.epg.fetcher.EpgFetcher
 import top.yogiczy.mytv.utils.Logger
 import java.io.StringReader
-import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Locale
 
 /**
  * 节目单获取
@@ -26,6 +24,10 @@ import java.util.Locale
 class EpgRepository : FileCacheRepository("epg.json") {
     private val log = Logger.create(javaClass.simpleName)
     private val epgXmlRepository = EpgXmlRepository()
+
+    companion object {
+        private val EPG_TIME_FORMAT = java.time.format.DateTimeFormatter.ofPattern("yyyyMMddHHmmss Z")
+    }
 
     /**
      * 解析节目单xml
@@ -61,10 +63,12 @@ class EpgRepository : FileCacheRepository("epg.json") {
 
                         fun parseTime(time: String): Long {
                             if (time.length < 14) return 0
-
-                            return SimpleDateFormat("yyyyMMddHHmmss Z", Locale.getDefault()).parse(
-                                time
-                            )?.time ?: 0
+                            return try {
+                                java.time.ZonedDateTime.parse(time, EPG_TIME_FORMAT)
+                                    .toInstant().toEpochMilli()
+                            } catch (_: Exception) {
+                                0
+                            }
                         }
 
                         if (epgMap.containsKey(channelId)) {
@@ -124,17 +128,23 @@ class EpgRepository : FileCacheRepository("epg.json") {
 private class EpgXmlRepository : FileCacheRepository("epg.xml") {
     private val log = Logger.create(javaClass.simpleName)
 
+    companion object {
+        private val httpClient = OkHttpClient.Builder()
+            .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
+            .readTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
+            .build()
+    }
+
     /**
      * 获取远程xml
      */
     private suspend fun fetchXml(url: String): String = withContext(Dispatchers.IO) {
         log.d("获取远程节目单xml: $url")
 
-        val client = OkHttpClient()
         val request = Request.Builder().url(url).build()
 
         try {
-            with(client.newCall(request).execute()) {
+            with(httpClient.newCall(request).execute()) {
                 if (!isSuccessful) {
                     throw Exception("获取远程节目单xml失败: $code")
                 }

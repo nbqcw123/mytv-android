@@ -18,17 +18,24 @@ import top.yogiczy.mytv.utils.Logger
 class IptvRepository : FileCacheRepository("iptv.txt") {
     private val log = Logger.create(javaClass.simpleName)
 
+    companion object {
+        private val httpClient = OkHttpClient.Builder()
+            .connectTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
+            .readTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
+            .writeTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
+            .build()
+    }
+
     /**
      * 获取远程直播源数据
      */
     private suspend fun fetchSource(sourceUrl: String) = withContext(Dispatchers.IO) {
         log.d("获取远程直播源: $sourceUrl")
 
-        val client = OkHttpClient()
         val request = Request.Builder().url(sourceUrl).build()
 
         try {
-            with(client.newCall(request).execute()) {
+            with(httpClient.newCall(request).execute()) {
                 if (!isSuccessful) {
                     throw Exception("获取远程直播源失败: $code")
                 }

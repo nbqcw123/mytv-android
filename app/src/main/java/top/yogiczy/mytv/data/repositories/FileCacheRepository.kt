@@ -11,7 +11,33 @@ import java.io.File
 abstract class FileCacheRepository(
     private val fileName: String,
 ) {
-    private fun getCacheFile() = File(AppGlobal.cacheDir, fileName)
+    companion object {
+        private const val MAX_CACHE_SIZE = 10L * 1024 * 1024 // 10MB total
+        private val cacheDir: File
+            get() = AppGlobal.cacheDir
+
+        private fun getTotalCacheSize(): Long {
+            return cacheDir.listFiles()?.sumOf { it.length() } ?: 0
+        }
+
+        private fun evictIfNeeded() {
+            val total = getTotalCacheSize()
+            if (total <= MAX_CACHE_SIZE) return
+            // Delete oldest files first
+            cacheDir.listFiles()
+                ?.sortedBy { it.lastModified() }
+                ?.forEach { file ->
+                    if (getTotalCacheSize() <= MAX_CACHE_SIZE * 0.7) return
+                    file.delete()
+                }
+        }
+
+        fun clearAllCache() {
+            cacheDir.listFiles()?.forEach { it.delete() }
+        }
+    }
+
+    private fun getCacheFile() = File(cacheDir, fileName)
 
     private suspend fun getCacheData(): String? = withContext(Dispatchers.IO) {
         val file = getCacheFile()
@@ -22,6 +48,7 @@ abstract class FileCacheRepository(
     private suspend fun setCacheData(data: String) = withContext(Dispatchers.IO) {
         val file = getCacheFile()
         file.writeText(data)
+        evictIfNeeded()
     }
 
     protected suspend fun getOrRefresh(cacheTime: Long, refreshOp: suspend () -> String): String {
