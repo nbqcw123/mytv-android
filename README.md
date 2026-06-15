@@ -10,6 +10,7 @@
     <p>使用Android原生开发的电视直播软件</p>
     <p><b>v1.4.5</b></p>
     <p>基于 <a href="https://github.com/yaoxieyoulei/mytv-android">yaoxieyoulei/mytv-android</a> 修改</p>
+    <p>原始项目致谢：<a href="https://github.com/lizongying/my-tv">my-tv</a> · <a href="https://github.com/zhumeng11/IPTV">IPV6直播源</a> · <a href="https://github.com/fanmingming/live">live</a></p>
 
 <img src="./screenshots/Screenshot_panel.png" width="96%"/>
 <br/>
@@ -109,30 +110,3 @@
 - [x] 自定义节目单
 - [x] 频道收藏
 - [x] 应用自定义设置
-
-## 更新日志
-
-[更新日志](./CHANGELOG.md)
-
-## 声明
-
-此项目（我的电视）是个人为了兴趣而开发, 仅用于学习和测试。 所用API皆从官方网站收集, 不提供任何破解内容。
-
-## 技术交流
-
-Telegram: https://t.me/mytv_android
-
-QQ群: 807328577
-
-## 赞赏
-
-<img src="./screenshots/mm_reward_qrcode.png" width="48%"/>
-
-## 致谢
-
-- [mytv-android](https://github.com/yaoxieyoulei/mytv-android) - 原始项目，本仓库基于此修改
-- [my-tv](https://github.com/lizongying/my-tv)
-- [参考设计稿](https://github.com/lizongying/my-tv/issues/594)
-- [IPV6直播源](https://github.com/zhumeng11/IPTV)
-- [live](https://github.com/fanmingming/live)
-- 等等
